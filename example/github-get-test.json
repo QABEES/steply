@@ -1,0 +1,13 @@
+{
+  "name": "GitHub GET example",
+  "steps": [
+    {
+      "name": "GET repo details",
+      "url": "/repos/octocat/Hello-World",
+      "method": "GET",
+      "assertions": {
+        "status": 200
+      }
+    }
+  ]
+}
