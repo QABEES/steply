@@ -84,3 +84,90 @@ Reports generated at: ./target/reports/steply-report
 ========================================
 ➜  steply-dist 
 ```
+
+# STEPLY CLI
+export PATH="/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply-dist/bin:$PATH
+(Not necessary if you're creating a Symlink to bin/steply.sh in your /usr/local/bin or similar)
+
+DO THIS FOR SYMLINK:
+```shell
+sudo tee /usr/local/bin/steply > /dev/null <<'EOF'
+#!/bin/bash
+exec "/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply-dist/bin/steply.sh" "$@"
+EOF
+sudo chmod +x /usr/local/bin/steply
+```
+
+REVIEW THE SYMLINK:
+```
+➜  ~ view /usr/local/bin/steply                    
+#!/bin/bash
+exec "/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply-dist/bin/steply.sh" "$@"
+```
+
+TEST THE SYMLINK:
+Run it from anywhere, where you have the "example" folder available:
+```
+➜  ~ steply -h                                         
+Error parsing arguments: Missing required option: t
+usage: steply
+ -f,--folder <arg>      Folder containing multiple scenarios
+ -h,--help              Show help
+ -l,--log-level <arg>   Logging level (WARN/INFO/DEBUG)
+ -r,--reports <arg>     Custom report output directory (default: ./target)
+ -s,--scenario <arg>    Single scenario file path
+ -t,--target <arg>      Target environment properties file
+ -v,--version           Show version information
+
+Running example:
+----------------
+➜  steply-dist pwd
+/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply-dist
+➜  steply-dist 
+
+➜  steply-dist steply --scenario example/github-get-test.json --target example/github.properties --reports ./target/reports
+========================================
+Steply Test Execution v0.1.0-SNAPSHOT
+========================================
+Scenario: example/github-get-test.json
+Target: example/github.properties
+Report: ./target/reports
+========================================
+Executing tests...
+
+Total: 1
+Passed: 1
+Failed: 0
+Duration: 0ms
+========================================
+Reports generated at: ./target/reports/steply-report
+========================================
+```
+
+RUN FROM RANDOM FOLDER(TESTED):
+```shell
+➜  random_folder pwd
+/Users/nchandra/Downloads/STEPLY_WORKSPACE/random_folder
+
+➜  random_folder ls -l  
+total 0
+drwxr-xr-x  4 nchandra  staff  128 29 Dec 01:14 example
+
+➜  random_folder steply --scenario example/github-get-test.json --target example/github.properties --reports ./target/reports
+========================================
+Steply Test Execution v0.1.0-SNAPSHOT
+========================================
+Scenario: example/github-get-test.json
+Target: example/github.properties
+Report: ./target/reports
+========================================
+Executing tests...
+
+Total: 1
+Passed: 1
+Failed: 0
+Duration: 0ms
+========================================
+Reports generated at: ./target/reports/steply-report
+========================================
+```
