@@ -22,18 +22,27 @@ WORKDIR=$(pwd)
 rm -rf "$OUTDIR"
 mkdir -p "$OUTDIR/jre" "$OUTDIR/lib" "$OUTDIR/bin" "$OUTDIR/config" "$OUTDIR/example"
 
+# Ensure CLI jar exists (built as jar-with-dependencies)
+CLI_JAR=$(ls steply-cli/target/*-jar-with-dependencies.jar 2>/dev/null || true)
+if [ -z "$CLI_JAR" ]; then
+  echo "Error: CLI jar-with-dependencies not found. Build it first with:"
+  echo "  mvn -pl steply-cli -am package -DskipTests"
+  exit 1
+fi
+
 # copy jre contents
 cp -r "$LOCAL_JRE/"* "$OUTDIR/jre/"
 
 # copy lib (built jars)
-cp -v target/steply-cli/target/*-jar-with-dependencies.jar "$OUTDIR/lib/" || true
+echo "Copying CLI jar to lib/"
+cp -v "$CLI_JAR" "$OUTDIR/lib/"
 
 cp -r config/* "$OUTDIR/config/" || true
 cp -r example/* "$OUTDIR/example/" || true
 cp -r scripts/* "$OUTDIR/bin/"
 chmod +x "$OUTDIR/bin/"*.sh || true
 
-cp LICENSE README.md VERSION.txt "$OUTDIR/"
+cp LICENSE README.md VERSION.txt "$OUTDIR/" || true
 
 ZIPNAME="steply-$(cat VERSION.txt | head -n1 | sed 's/steply.version=//')-local.zip"
 cd "$OUTDIR/.."

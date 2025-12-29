@@ -20,7 +20,7 @@ See `scripts/README-distribution.md` for usage examples.
 
 License: Apache-2.0
 
-@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RUNNING @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 FROM PROJECT ROOT:
 => Using --scenario:
@@ -32,3 +32,55 @@ java -jar steply-cli/target/steply-cli-0.1.0-SNAPSHOT-jar-with-dependencies.jar
 
 => Using -s :
 java -jar steply-cli/target/steply-cli-0.1.0-SNAPSHOT-jar-with-dependencies.jar -s example/github-get-test.json -t example/github.properties -r ./target/reports -l INFO
+
+=> Build Distribution zip:
+./scripts/build-distribution-local-jre.sh /Users/<MYHOMEDIR>/.sdkman/candidates/java/current/zulu-8.jdk/Contents/Home/jre zip_folder
+
+
+**************************************************
+PREPARE THE CONTENT FOR ZIP FILE:
+```shell
+Quick one-off fix (if you want to test now without changing scripts)
+
+Build the CLI jar: 
+mvn -pl steply-cli -am package -DskipTests
+
+Copy the jar into your distribution's lib manually: 
+cp steply-cli/target/*-jar-with-dependencies.jar /private/tmp/steply-dist/lib/
+```
+
+BUILD THE ZIP FILE:
+MAC:
+```shell
+./scripts/build-distribution-local-jre.sh /Users/nchandra/.sdkman/candidates/java/current/zulu-8.jdk/Contents/Home/jre /tmp/steply-dist
+```
+
+RUN THE TEST:
+```shell
+➜  steply-dist pwd
+/private/tmp/steply-dist
+
+Make sure bin/steply.sh is executable, then run:
+cd /private/tmp/steply-dist
+
+➜  steply-dist 
+./bin/steply.sh --scenario example/github-get-test.json --target example/github.properties --reports ./target/reports
+
+========================================
+Steply Test Execution v0.1.0-SNAPSHOT
+========================================
+Scenario: example/github-get-test.json
+Target: example/github.properties
+Report: ./target/reports
+========================================
+Executing tests...
+
+Total: 1
+Passed: 1
+Failed: 0
+Duration: 0ms
+========================================
+Reports generated at: ./target/reports/steply-report
+========================================
+➜  steply-dist 
+```

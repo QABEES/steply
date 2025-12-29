@@ -1,52 +1,50 @@
 #!/usr/bin/env bash
-# Build distribution automatically for macos-aarch64 by downloading a Temurin (Adoptium) JRE.
-# Usage: ./build-distribution.sh [version] [output-dir]
-# Example: ./build-distribution.sh 8u372-b07 /tmp/steply-dist
+# Build distribution using a local JRE path.
+# Usage: ./build-distribution-local-jre.sh /path/to/jre [output-dir]
+# Example: ./build-distribution-local-jre.sh /Library/Java/JavaVirtualMachines/temurin-8.jre/Contents/Home /tmp/steply-dist
 
 set -euo pipefail
 
-ZEROCODE_VERSION=${ZEROCODE_VERSION:-1.6.0}
-STEP_VERSION=${STEP_VERSION:-0.1.0-SNAPSHOT}
-JRE_VERSION=${1:-8u372-b07}
+LOCAL_JRE=${1:-}
 OUTDIR=${2:-./dist}
 
+if [ -z "$LOCAL_JRE" ]; then
+  echo "Usage: $0 /path/to/jre [output-dir]"
+  exit 1
+fi
+
+if [ ! -d "$LOCAL_JRE" ]; then
+  echo "Provided JRE path does not exist: $LOCAL_JRE"
+  exit 1
+fi
+
 WORKDIR=$(pwd)
-BUILD_DIR="$WORKDIR/target/assembly"
-mkdir -p "$BUILD_DIR"
-
-echo "Building distribution into $OUTDIR"
 rm -rf "$OUTDIR"
-mkdir -p "$OUTDIR/bin" "$OUTDIR/lib" "$OUTDIR/config" "$OUTDIR/example"
+mkdir -p "$OUTDIR/jre" "$OUTDIR/lib" "$OUTDIR/bin" "$OUTDIR/config" "$OUTDIR/example"
 
-# copy built jars (user must run mvn package first)
-echo "Copying CLI jar (jar-with-dependencies) to lib/"
-cp -v target/steply-cli/target/*-jar-with-dependencies.jar "$OUTDIR/lib/" || true
+# Ensure CLI jar exists (built as jar-with-dependencies)
+CLI_JAR=$(ls steply-cli/target/*-jar-with-dependencies.jar 2>/dev/null || true)
+if [ -z "$CLI_JAR" ]; then
+  echo "Error: CLI jar-with-dependencies not found. Build it first with:"
+  echo "  mvn -pl steply-cli -am package -DskipTests"
+  exit 1
+fi
 
-# copy config and example
+# copy jre contents
+cp -r "$LOCAL_JRE/"* "$OUTDIR/jre/"
+
+# copy lib (built jars)
+echo "Copying CLI jar to lib/"
+cp -v "$CLI_JAR" "$OUTDIR/lib/"
+
 cp -r config/* "$OUTDIR/config/" || true
 cp -r example/* "$OUTDIR/example/" || true
-
-# download Temurin JRE for macos-aarch64 (Temurin archive URL may change — adjust accordingly)
-# This is approximate — if the automatic download fails, use the local JRE script.
-JRE_TAR="OpenJDK8U-jre_aarch64_mac_hotspot_${JRE_VERSION}.tar.gz"
-JRE_URL="https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u-${JRE_VERSION}/${JRE_TAR}"
-echo "Attempting to download JRE from ${JRE_URL}"
-curl -fSL -o "/tmp/${JRE_TAR}" "${JRE_URL}" || { echo "Failed to download JRE. Use build-distribution-local-jre.sh with a local JRE."; exit 1; }
-mkdir -p "$OUTDIR/jre"
-tar -xzf "/tmp/${JRE_TAR}" -C /tmp
-# Many Temurin tarballs unpack to a folder — move bin & lib
-JRE_DIR=$(tar -tf "/tmp/${JRE_TAR}" | head -1 | sed -e 's@/.*@@')
-mv "/tmp/${JRE_DIR}/"/* "$OUTDIR/jre/"
-
-# copy scripts
 cp -r scripts/* "$OUTDIR/bin/"
 chmod +x "$OUTDIR/bin/"*.sh || true
 
-# copy top-level files
-cp LICENSE README.md VERSION.txt "$OUTDIR/"
+cp LICENSE README.md VERSION.txt "$OUTDIR/" || true
 
-# zip
-ZIPNAME="steply-${STEP_VERSION}-macos-aarch64.zip"
+ZIPNAME="steply-$(cat VERSION.txt | head -n1 | sed 's/steply.version=//')-local.zip"
 cd "$OUTDIR/.."
 zip -r "$ZIPNAME" "$(basename "$OUTDIR")"
 shasum -a 256 "$ZIPNAME" > "$ZIPNAME".sha256
