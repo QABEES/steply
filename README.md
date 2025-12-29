@@ -14,28 +14,9 @@ How to build locally:
 Distribution:
 - There are two scripts in `scripts/`:
   - `build-distribution.sh` — download a Temurin macOS/AArch64 JRE and assemble distribution (automatic).
-  - `build-distribution-local-jre.sh` — assemble distribution using a local JRE path you provide.
+  - `build-distribution-local-jre.sh` — assemble distribution using a local JRE path you provide. (SEE BELOW HOW TO RUN)
 
 See `scripts/README-distribution.md` for usage examples.
-
-License: Apache-2.0
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RUNNING @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-FROM PROJECT ROOT:
-=> Using --scenario:
-java -jar steply-cli/target/steply-cli-0.1.0-SNAPSHOT-jar-with-dependencies.jar
---scenario example/github-get-test.json
---target example/github.properties
---reports ./target/reports
---log-level INFO
-
-=> Using -s :
-java -jar steply-cli/target/steply-cli-0.1.0-SNAPSHOT-jar-with-dependencies.jar -s example/github-get-test.json -t example/github.properties -r ./target/reports -l INFO
-
-=> Build Distribution zip:
-./scripts/build-distribution-local-jre.sh /Users/<MYHOMEDIR>/.sdkman/candidates/java/current/zulu-8.jdk/Contents/Home/jre zip_folder
-
 
 **************************************************
 PREPARE THE CONTENT FOR ZIP FILE:
@@ -84,6 +65,23 @@ Reports generated at: ./target/reports/steply-report
 ========================================
 ➜  steply-dist 
 ```
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RUNNING @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+FROM PROJECT ROOT:
+=> Using --scenario:
+java -jar steply-cli/target/steply-cli-0.1.0-SNAPSHOT-jar-with-dependencies.jar
+--scenario example/github-get-test.json
+--target example/github.properties
+--reports ./target/reports
+--log-level INFO
+
+=> Using -s :
+java -jar steply-cli/target/steply-cli-0.1.0-SNAPSHOT-jar-with-dependencies.jar -s example/github-get-test.json -t example/github.properties -r ./target/reports -l INFO
+
+=> Build Distribution zip:
+./scripts/build-distribution-local-jre.sh /Users/<MYHOMEDIR>/.sdkman/candidates/java/current/zulu-8.jdk/Contents/Home/jre zip_folder
+
 
 # STEPLY CLI
 export PATH="/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply-dist/bin:$PATH

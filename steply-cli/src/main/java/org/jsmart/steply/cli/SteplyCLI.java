@@ -1,9 +1,9 @@
 package org.jsmart.steply.cli;
 
-import org.apache.commons.cli.*;
+import org. apache.commons.cli.*;
 import org.jsmart.steply.core.SteplyScenarioRunner;
 
-import java.io.File;
+import java. io.File;
 import java.util.Map;
 
 /**
@@ -16,7 +16,7 @@ public class SteplyCLI {
 
         options.addOption(Option.builder("s").longOpt("scenario").hasArg().desc("Single scenario file path").build());
         options.addOption(Option.builder("f").longOpt("folder").hasArg().desc("Folder containing multiple scenarios").build());
-        options.addOption(Option.builder("t").longOpt("target").hasArg().desc("Target environment properties file").required().build());
+        options.addOption(Option.builder("t").longOpt("target").hasArg().desc("Target environment properties file").build());
         options.addOption(Option.builder("r").longOpt("reports").hasArg().desc("Custom report output directory (default: ./target)").build());
         options.addOption(Option.builder("l").longOpt("log-level").hasArg().desc("Logging level (WARN/INFO/DEBUG)").build());
         options.addOption("v", "version", false, "Show version information");
@@ -36,10 +36,14 @@ public class SteplyCLI {
                 System.exit(0);
             }
 
-            String scenario = cmd.getOptionValue("s");
-            String folder = cmd.getOptionValue("f");
-            String target = cmd.getOptionValue("t");
-            String reports = cmd.getOptionValue("r", "target");
+            String scenario = "/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply/example/github-get-test.json";
+            String target = "/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply/example/config_hosts_test.properties.properties";
+            String folder = null;
+
+//            String scenario = cmd.getOptionValue("s");
+//            String folder = cmd.getOptionValue("f");
+//            String target = cmd.getOptionValue("t");
+            String reports = cmd. getOptionValue("r", "target");
             String logLevel = cmd.getOptionValue("l", "INFO");
 
             if ((scenario == null && folder == null) || (scenario != null && folder != null)) {
@@ -48,40 +52,56 @@ public class SteplyCLI {
                 System.exit(1);
             }
 
+            if (target == null) {
+                System. err.println("Missing required option:  --target (-t)");
+                new HelpFormatter().printHelp("steply", options);
+                System.exit(1);
+            }
+
             if (scenario != null) {
+
                 // Single scenario mode
                 SteplyScenarioRunner runner = new SteplyScenarioRunner(scenario, target, reports, logLevel);
                 Map<String, Object> results = runner.runSingleScenario();
 
                 printSummary(results, scenario, target, reports);
                 int failed = ((Number) results.getOrDefault("failed", 0)).intValue();
-                System.exit(failed == 0 ? 0 : 2);
+                System.exit(failed == 0 ? 0 :  2);
             } else {
-                // Folder mode (MVP: iterate files and call runner for each)
+                // Folder mode:  iterate . json files and run each
                 File folderFile = new File(folder);
                 if (!folderFile.isDirectory()) {
-                    System.err.println("Provided folder path is not a directory: " + folder);
+                    System. err.println("Provided folder path is not a directory: " + folder);
                     System.exit(1);
                 }
                 File[] files = folderFile.listFiles((d, name) -> name.endsWith(".json"));
                 int totalFailed = 0;
+                int totalScenarios = 0;
                 if (files != null) {
                     for (File f : files) {
+                        totalScenarios++;
                         SteplyScenarioRunner runner = new SteplyScenarioRunner(f.getAbsolutePath(), target, reports, logLevel);
                         Map<String, Object> results = runner.runSingleScenario();
                         totalFailed += ((Number) results.getOrDefault("failed", 0)).intValue();
                     }
                 }
+                System. out.println("========================================");
+                System.out. println("Steply Test Execution v0.1.0-SNAPSHOT (Folder Mode)");
+                System. out.println("========================================");
+                System.out.println("Total Scenarios: " + totalScenarios);
+                System.out.println("Failed:  " + totalFailed);
+                System.out.println("Report Directory: " + reports);
+                System.out.println("========================================");
                 System.exit(totalFailed == 0 ? 0 : 2);
             }
         } catch (ParseException pe) {
-            System.err.println("Error parsing arguments: " + pe.getMessage());
+            System.err. println("Error parsing arguments: " + pe.getMessage());
             new HelpFormatter().printHelp("steply", options);
             System.exit(1);
         } catch (Exception e) {
             System.err.println("Execution failed: " + e.getMessage());
             e.printStackTrace(System.err);
-            System.exit(2);
+            System. exit(2);
         }
     }
 
@@ -91,16 +111,16 @@ public class SteplyCLI {
         System.out.println("========================================");
         System.out.println("Scenario: " + scenario);
         System.out.println("Target: " + target);
-        System.out.println("Report: " + reports);
+        System.out.println("Report:  " + reports);
         System.out.println("========================================");
         System.out.println("Executing tests...");
-        System.out.println();
+        System.out. println();
         System.out.println(String.format("Total: %s", results.getOrDefault("total", 0)));
         System.out.println(String.format("Passed: %s", results.getOrDefault("passed", 0)));
         System.out.println(String.format("Failed: %s", results.getOrDefault("failed", 0)));
-        System.out.println(String.format("Duration: %sms", results.getOrDefault("duration_ms", 0)));
         System.out.println("========================================");
-        System.out.println("Reports generated at: " + reports + File.separator + "steply-report");
-        System.out.println("========================================");
+        System.out.println("Reports generated at: " + results.getOrDefault("reportDir", reports));
+        System.out.println("Open HTML report:  " + results.getOrDefault("reportDir", reports) + "/index.html");
+        System.out. println("========================================");
     }
 }

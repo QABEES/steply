@@ -25,11 +25,11 @@
       <artifactId>commons-cli</artifactId>
       <version>${commons.cli.version}</version>
     </dependency>
-    <dependency>
+    <!--<dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
-    </dependency>
+    </dependency>-->
   </dependencies>
 
   <build>

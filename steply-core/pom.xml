@@ -3,37 +3,59 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
            https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent>
-    <groupId>org.jsmart</groupId>
-    <artifactId>steply-parent</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>steply-core</artifactId>
-  <packaging>jar</packaging>
-  <name>steply-core</name>
+    <parent>
+        <groupId>org.jsmart</groupId>
+        <artifactId>steply-parent</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>steply-core</artifactId>
+    <packaging>jar</packaging>
+    <name>steply-core</name>
 
-  <dependencies>
-    <!-- zerocode-tdd - consumed by client if needed -->
-    <dependency>
-      <groupId>org.jsmart</groupId>
-      <artifactId>zerocode-tdd</artifactId>
-      <version>${zerocode.version}</version>
-      <scope>provided</scope>
-    </dependency>
+    <dependencies>
+        <!-- zerocode-tdd - now a compile dependency, not provided -->
+        <dependency>
+            <groupId>org.jsmart</groupId>
+            <artifactId>zerocode-tdd</artifactId>
+            <version>${zerocode.version}</version>
+        </dependency>
 
-    <!-- Jackson for JSON parsing -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>${jackson.version}</version>
-    </dependency>
+        <!-- Jackson for JSON parsing -->
+        <!--<dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>-->
 
-    <!-- commons-io -->
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.6</version>
-    </dependency>
-  </dependencies>
+        <!-- commons-io -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+        </dependency>
+
+        <!-- Google Guice for DI (zerocode uses this) -->
+        <!--<dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>7.0.0</version>
+        </dependency>-->
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+    </dependencies>
 </project>
