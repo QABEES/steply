@@ -1,10 +1,15 @@
 package org.jsmart.steply.cli;
 
-import org. apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.jsmart.steply.core.SteplyScenarioRunner;
 
-import java. io.File;
-import java.util.Map;
+import java.io.File;
 
 /**
  * Minimal CLI that parses args and invokes SteplyScenarioRunner.
@@ -71,25 +76,9 @@ public class SteplyCLI {
                     System. err.println("Provided folder path is not a directory: " + folder);
                     System.exit(1);
                 }
-                File[] files = folderFile.listFiles((d, name) -> name.endsWith(".json"));
-                int totalFailed = 0;
-                int totalScenarios = 0;
-                if (files != null) {
-                    for (File f : files) {
-                        totalScenarios++;
-                        SteplyScenarioRunner runner = new SteplyScenarioRunner(f.getAbsolutePath(), target, reports, logLevel);
-                        Map<String, Object> results = runner.runSingleScenario();
-                        totalFailed += ((Number) results.getOrDefault("failed", 0)).intValue();
-                    }
-                }
-                System. out.println("========================================");
-                System.out. println("Steply Test Execution v0.1.0-SNAPSHOT (Folder Mode)");
-                System. out.println("========================================");
-                System.out.println("Total Scenarios: " + totalScenarios);
-                System.out.println("Failed:  " + totalFailed);
-                System.out.println("Report Directory: " + reports);
-                System.out.println("========================================");
-                System.exit(totalFailed == 0 ? 0 : 2);
+
+                // TODO: Implement using Package runner
+
             }
         } catch (ParseException pe) {
             System.err. println("Error parsing arguments: " + pe.getMessage());
@@ -102,22 +91,4 @@ public class SteplyCLI {
         }
     }
 
-    private static void printSummary(Map<String, Object> results, String scenario, String target, String reports) {
-        System.out.println("========================================");
-        System.out.println("Steply Test Execution v0.1.0-SNAPSHOT");
-        System.out.println("========================================");
-        System.out.println("Scenario: " + scenario);
-        System.out.println("Target: " + target);
-        System.out.println("Report:  " + reports);
-        System.out.println("========================================");
-        System.out.println("Executing tests...");
-        System.out. println();
-        System.out.println(String.format("Total: %s", results.getOrDefault("total", 0)));
-        System.out.println(String.format("Passed: %s", results.getOrDefault("passed", 0)));
-        System.out.println(String.format("Failed: %s", results.getOrDefault("failed", 0)));
-        System.out.println("========================================");
-        System.out.println("Reports generated at: " + results.getOrDefault("reportDir", reports));
-        System.out.println("Open HTML report:  " + results.getOrDefault("reportDir", reports) + "/index.html");
-        System.out. println("========================================");
-    }
 }

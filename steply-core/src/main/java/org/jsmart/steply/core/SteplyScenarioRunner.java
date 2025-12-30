@@ -3,8 +3,6 @@ package org.jsmart.steply.core;
 import org.jsmart.steply.template.RunJUnitTestProgrammatically;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Map;
 
 /**
  * MVP SteplyScenarioRunner. Validates inputs, parses scenario and target env,
@@ -37,10 +35,8 @@ public class SteplyScenarioRunner {
         }
     }
 
-    public Map<String, Object> runSingleScenario() {
+    public void runSingleScenario() {
         validate();
-        Map<String, Object> results = RunJUnitTestProgrammatically.run(scenarioFile.getAbsolutePath(), targetEnvFile.getAbsolutePath());
-        return results;
-
+        RunJUnitTestProgrammatically.run(scenarioFile.getAbsolutePath(), targetEnvFile.getAbsolutePath());
     }
 }

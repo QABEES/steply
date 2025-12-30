@@ -1,15 +1,21 @@
 ```
-Build:
+BUILD:
 ======
 mvn clean  install -DskipTests
+./scripts/build-distribution-local-jre.sh /Users/nchandra/.sdkman/candidates/java/current/zulu-8.jdk/Contents/Home/jre /tmp/steply-dist
 cp steply-cli/target/*-jar-with-dependencies.jar /private/tmp/steply-dist/lib/
 ./scripts/build-distribution-local-jre.sh /Users/nchandra/.sdkman/candidates/java/current/zulu-8.jdk/Contents/Home/jre /tmp/steply-dist
 
-Run:
+RUN:
 =====
 ➜  random pwd
 /Users/nchandra/Downloads/STEPLY_WORKSPACE/random
 steply --scenario example/hello_world_status_ok_assertions_new.json --target example/github_host_new.properties                        
+
+or:
+
+➜  cd steply-dist
+./bin/steply.sh --scenario example/hello_world_status_ok_assertions_new.json --target example/github_host_new.properties
 
 ```
 

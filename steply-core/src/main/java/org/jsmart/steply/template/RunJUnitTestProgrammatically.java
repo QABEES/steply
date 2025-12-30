@@ -4,11 +4,9 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
-import java.util.Map;
-
 public class RunJUnitTestProgrammatically {
-    public static Map<String, Object> run(String scenarioPath, String targetEnvPath) {
-        // ---- Override ZeroCode annotations programmatically ----
+    public static void run(String scenarioPath, String targetEnvPath) {
+        // ---- Override ZeroCode annotations programmatically via System properties ----
         System.setProperty("zerocode.env", targetEnvPath);
         System.setProperty("zerocode.scenario", scenarioPath);
 
@@ -41,10 +39,8 @@ public class RunJUnitTestProgrammatically {
             System.exit(1);   // NON-ZERO → CI FAIL
         }
 
-        System.out.println("✅ All tests passed");
+        System.out.println("✅ Tests passed");
         System.exit(0);       // ZERO → CI PASS
-
-        return null;
     }
 
     public static void main(String[] args) {
