@@ -36,13 +36,14 @@ public class SteplyCLI {
                 System.exit(0);
             }
 
-            String scenario = "/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply/example/github-get-test.json";
-            String target = "/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply/example/config_hosts_test.properties.properties";
-            String folder = null;
+//            String scenario = "/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply/steply-core/src/main/resources/helloworld/hello_world_status_ok_assertions_new.json";
+//            String target = "/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply/steply-core/src/main/resources/config/github_host_new.properties";
+//            String folder = null;
 
-//            String scenario = cmd.getOptionValue("s");
-//            String folder = cmd.getOptionValue("f");
-//            String target = cmd.getOptionValue("t");
+            String scenario = cmd.getOptionValue("s");
+            String folder = cmd.getOptionValue("f");
+            String target = cmd.getOptionValue("t");
+
             String reports = cmd. getOptionValue("r", "target");
             String logLevel = cmd.getOptionValue("l", "INFO");
 
@@ -62,11 +63,7 @@ public class SteplyCLI {
 
                 // Single scenario mode
                 SteplyScenarioRunner runner = new SteplyScenarioRunner(scenario, target, reports, logLevel);
-                Map<String, Object> results = runner.runSingleScenario();
-
-                printSummary(results, scenario, target, reports);
-                int failed = ((Number) results.getOrDefault("failed", 0)).intValue();
-                System.exit(failed == 0 ? 0 :  2);
+                runner.runSingleScenario();
             } else {
                 // Folder mode:  iterate . json files and run each
                 File folderFile = new File(folder);

@@ -1,10 +1,9 @@
 package org.jsmart.steply.core;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jsmart.steply.template.RunJUnitTestProgrammatically;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -38,32 +37,10 @@ public class SteplyScenarioRunner {
         }
     }
 
-    public Map<String, Object> runSingleScenario() throws IOException {
+    public Map<String, Object> runSingleScenario() {
         validate();
-        SteplyConfigLoader configLoader = new SteplyConfigLoader();
-        configLoader.updateLoggingLevel(logLevel);
-        Map<String, String> envProps = configLoader.loadEnvironmentProperties(targetEnvFile.getAbsolutePath());
-
-        // Parse scenario JSON (basic)
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode scenario = mapper.readTree(scenarioFile);
-
-        // MVP: we don't execute HTTP steps here. Instead we validate and create a stubbed result.
-        Map<String, Object> results = new HashMap<>();
-        results.put("scenario", scenarioFile.getName());
-        results.put("target", targetEnvFile.getName());
-        results.put("host", envProps.getOrDefault("host", ""));
-        results.put("total", 1);
-        results.put("passed", 1);
-        results.put("failed", 0);
-        results.put("duration_ms", 0);
-
-        // Generate reports
-        SteplyReportGenerator rg = new SteplyReportGenerator();
-        File out = new File(reportDir, "steply-report");
-        rg.generateHTMLReport(results, out);
-        rg.generateCSVReport(results, out);
-
+        Map<String, Object> results = RunJUnitTestProgrammatically.run(scenarioFile.getAbsolutePath(), targetEnvFile.getAbsolutePath());
         return results;
+
     }
 }

@@ -1,3 +1,18 @@
+```
+Build:
+======
+mvn clean  install -DskipTests
+cp steply-cli/target/*-jar-with-dependencies.jar /private/tmp/steply-dist/lib/
+./scripts/build-distribution-local-jre.sh /Users/nchandra/.sdkman/candidates/java/current/zulu-8.jdk/Contents/Home/jre /tmp/steply-dist
+
+Run:
+=====
+➜  random pwd
+/Users/nchandra/Downloads/STEPLY_WORKSPACE/random
+steply --scenario example/hello_world_status_ok_assertions_new.json --target example/github_host_new.properties                        
+
+```
+
 # Steply — MVP
 
 This repository contains an MVP implementation for the "Single Scenario CLI" described in issue #2.
@@ -19,7 +34,7 @@ Distribution:
 See `scripts/README-distribution.md` for usage examples.
 
 **************************************************
-PREPARE THE CONTENT FOR ZIP FILE:
+=> PREPARE THE CONTENT FOR ZIP FILE:
 ```shell
 Quick one-off fix (if you want to test now without changing scripts)
 
@@ -30,10 +45,15 @@ Copy the jar into your distribution's lib manually:
 cp steply-cli/target/*-jar-with-dependencies.jar /private/tmp/steply-dist/lib/
 ```
 
-BUILD THE ZIP FILE:
+=> BUILD THE ZIP FILE:
 MAC:
 ```shell
 ./scripts/build-distribution-local-jre.sh /Users/nchandra/.sdkman/candidates/java/current/zulu-8.jdk/Contents/Home/jre /tmp/steply-dist
+```
+
+RUN:
+```
+steply --scenario example/hello_world_status_ok_assertions_new.json --target example/github_host_new.properties --reports ./target/reports
 ```
 
 RUN THE TEST:
