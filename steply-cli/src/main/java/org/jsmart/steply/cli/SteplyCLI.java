@@ -47,7 +47,7 @@ public class SteplyCLI {
 
             String scenario = cmd.getOptionValue("s");
             String folder = cmd.getOptionValue("f");
-            String target = cmd.getOptionValue("t");
+            String targetEnv = cmd.getOptionValue("t");
 
             String reports = cmd. getOptionValue("r", "target");
             String logLevel = cmd.getOptionValue("l", "INFO");
@@ -58,22 +58,26 @@ public class SteplyCLI {
                 System.exit(1);
             }
 
-            if (target == null) {
+            if (targetEnv == null) {
                 System. err.println("Missing required option:  --target (-t)");
                 new HelpFormatter().printHelp("steply", options);
                 System.exit(1);
             }
 
-            if (scenario != null) {
-
+            if (folder != null) {
                 // Single scenario mode
-                SteplyScenarioRunner runner = new SteplyScenarioRunner(scenario, target, reports, logLevel);
+                SteplyScenarioRunner runner = new SteplyScenarioRunner(scenario, targetEnv, reports, logLevel);
+                runner.runSuite(folder, targetEnv, reports, logLevel);
+            }
+            if (scenario != null) {
+                // Single scenario mode
+                SteplyScenarioRunner runner = new SteplyScenarioRunner(scenario, targetEnv, reports, logLevel);
                 runner.runSingleScenario();
             } else {
                 // Folder mode:  iterate . json files and run each
                 File folderFile = new File(folder);
                 if (!folderFile.isDirectory()) {
-                    System. err.println("Provided folder path is not a directory: " + folder);
+                    System.err.println("Provided folder path is not a directory: " + folder);
                     System.exit(1);
                 }
 

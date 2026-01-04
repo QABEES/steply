@@ -37,6 +37,11 @@ public class SteplyScenarioRunner {
 
     public void runSingleScenario() {
         validate();
-        RunJUnitTestProgrammatically.run(scenarioFile.getAbsolutePath(), targetEnvFile.getAbsolutePath());
+        RunJUnitTestProgrammatically.runSingle(scenarioFile.getAbsolutePath(), targetEnvFile.getAbsolutePath());
+    }
+
+    public void runSuite(String folder, String targetEnv, String reports, String logLevel) {
+        validate();
+        RunJUnitTestProgrammatically.runSuite(folder, targetEnv);
     }
 }

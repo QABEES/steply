@@ -1,10 +1,29 @@
+EXEC:
+```
+- Download latest steply.zip file (from /tmp dir)
+- Copy to a different location(eg ~/Downloads/STEPLY_WORKSPACE), unzip it (./steply-dist)
+- (This is where the symlink bin/steply.sh will point to)
+- Run a test scenario via CLI: 
+  steply --scenario example/hello_world_status_ok_assertions_new.json --target example/github_host_new.properties
+  or
+  steply --scenario example/scenario_with_author_and_tag.json --target example/github_host_new.properties
+```
+
+ZIP:
 ```
 BUILD:
 ======
 mvn clean  install -DskipTests
+(or mvn -T1C clean package -DskipTests)
+
 ./scripts/build-distribution-local-jre.sh /Users/nchandra/.sdkman/candidates/java/current/zulu-8.jdk/Contents/Home/jre /tmp/steply-dist
+(also creates "steply-0.1.0-SNAPSHOT-local.zip" in /tmp)
+
+Optional:
 cp steply-cli/target/*-jar-with-dependencies.jar /private/tmp/steply-dist/lib/
+
 ./scripts/build-distribution-local-jre.sh /Users/nchandra/.sdkman/candidates/java/current/zulu-8.jdk/Contents/Home/jre /tmp/steply-dist
+(Bundles JRE and creates final zip under /tmp folder)
 
 RUN:
 =====

@@ -1,5 +1,5 @@
 {
-    "scenarioName": "NEW - TEST GITHUB USER DETAILS SCENARIO with mojombo",
+    "scenarioName": "NEW - TEST GITHUB USER DETAILS SCENARIO with mojombo @Syed #SIT",
     "steps": [
         {
             "name": "get_user_details_new",
