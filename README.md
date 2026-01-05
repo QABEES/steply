@@ -1,12 +1,37 @@
 EXEC:
 ```
 - Download latest steply.zip file (from /tmp dir)
+
 - Copy to a different location(eg ~/Downloads/STEPLY_WORKSPACE), unzip it (./steply-dist)
-- (This is where the symlink bin/steply.sh will point to)
+  (This is where the symlink bin/steply.sh will point to)
+  
 - Run a test scenario via CLI: 
   steply --scenario example/hello_world_status_ok_assertions_new.json --target example/github_host_new.properties
   or
   steply --scenario example/scenario_with_author_and_tag.json --target example/github_host_new.properties
+
+- Run a test suite via CLI:
+  steply --folder tests --target example/github_host_new.properties
+
+Folder:
+-------
+➜  pwd 
+
+|random
+├── example
+│   ├── github_host_new.properties
+│   ├── hello_world_status_ok_assertions_new.json
+│   └── scenario_with_author_and_tag.json
+├── target
+│   ├── logs
+│   │   └── executions.log
+│   ├── zerocode-junit-granular-report.csv
+│   ├── zerocode-junit-interactive-fuzzy-search.html
+└── tests
+   ├── hello_world_status_ok_assertions_new_v2.json
+   ├── hello_world_status_ok_assertions_v2.json
+   └── scenario_with_author_and_tag.json
+➜  random 
 ```
 
 ZIP:
@@ -14,22 +39,21 @@ ZIP:
 BUILD:
 ======
 mvn clean  install -DskipTests
-(or mvn -T1C clean package -DskipTests)
+or 
+mvn -T1C clean package -DskipTests
 
 ./scripts/build-distribution-local-jre.sh /Users/nchandra/.sdkman/candidates/java/current/zulu-8.jdk/Contents/Home/jre /tmp/steply-dist
 (also creates "steply-0.1.0-SNAPSHOT-local.zip" in /tmp)
+(Bundles JRE and creates final zip under /tmp folder)
 
 Optional:
 cp steply-cli/target/*-jar-with-dependencies.jar /private/tmp/steply-dist/lib/
-
-./scripts/build-distribution-local-jre.sh /Users/nchandra/.sdkman/candidates/java/current/zulu-8.jdk/Contents/Home/jre /tmp/steply-dist
-(Bundles JRE and creates final zip under /tmp folder)
 
 RUN:
 =====
 ➜  random pwd
 /Users/nchandra/Downloads/STEPLY_WORKSPACE/random
-steply --scenario example/hello_world_status_ok_assertions_new.json --target example/github_host_new.properties                        
+steply --scenario example/hello_world_status_ok_assertions_new.json --target example/github_host_new.properties              
 
 or:
 
@@ -143,7 +167,7 @@ sudo chmod +x /usr/local/bin/steply
 
 REVIEW THE SYMLINK:
 ```
-➜  ~ view /usr/local/bin/steply                    
+➜  ~ view /usr/local/bin/steply            
 #!/bin/bash
 exec "/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply-dist/bin/steply.sh" "$@"
 ```
@@ -151,16 +175,16 @@ exec "/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply-dist/bin/steply.sh" "$@"
 TEST THE SYMLINK:
 Run it from anywhere, where you have the "example" folder available:
 ```
-➜  ~ steply -h                                         
+➜  ~ steply -h                        
 Error parsing arguments: Missing required option: t
 usage: steply
- -f,--folder <arg>      Folder containing multiple scenarios
- -h,--help              Show help
+ -f,--folder <arg>    Folder containing multiple scenarios
+ -h,--help         Show help
  -l,--log-level <arg>   Logging level (WARN/INFO/DEBUG)
- -r,--reports <arg>     Custom report output directory (default: ./target)
- -s,--scenario <arg>    Single scenario file path
- -t,--target <arg>      Target environment properties file
- -v,--version           Show version information
+ -r,--reports <arg>   Custom report output directory (default: ./target)
+ -s,--scenario <arg>   Single scenario file path
+ -t,--target <arg>    Target environment properties file
+ -v,--version       Show version information
 
 Running example:
 ----------------

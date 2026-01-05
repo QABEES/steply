@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 @TestPackageRoot("helloworld")              // <--- Root of the all tests folder in the test/resources
 @EnvProperty("_${env}")                     // <--- mvn clean install -Denv=dev or -Denv=qa or -Denv=sit
 @RunWith(ZeroCodePackageRunner.class)
-public class HelloWorldSuiteTest {
+public class SuiteTest {
 
     // Keep this space clear \\
 

@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 
 @TargetEnv("config/github_host.properties")
 @RunWith(ZeroCodeUnitRunner.class)
-public class HelloWorldTest {
+public class SingleTest {
 
     @Test
     @Scenario("helloworld/hello_world_status_ok_assertions.json")

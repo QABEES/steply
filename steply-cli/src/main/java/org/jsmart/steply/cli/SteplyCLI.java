@@ -46,52 +46,47 @@ public class SteplyCLI {
 //            String folder = null;
 
             String scenario = cmd.getOptionValue("s");
-            String folder = cmd.getOptionValue("f");
+            String suiteFolder = cmd.getOptionValue("f");
             String targetEnv = cmd.getOptionValue("t");
 
-            String reports = cmd. getOptionValue("r", "target");
+            String reports = cmd.getOptionValue("r", "target");
             String logLevel = cmd.getOptionValue("l", "INFO");
 
-            if ((scenario == null && folder == null) || (scenario != null && folder != null)) {
+            if ((scenario == null && suiteFolder == null) || (scenario != null && suiteFolder != null)) {
                 System.err.println("Either --scenario (-s) OR --folder (-f) must be provided (mutually exclusive).");
                 new HelpFormatter().printHelp("steply", options);
                 System.exit(1);
             }
 
             if (targetEnv == null) {
-                System. err.println("Missing required option:  --target (-t)");
+                System.err.println("Missing required option:  --target (-t)");
                 new HelpFormatter().printHelp("steply", options);
                 System.exit(1);
             }
 
-            if (folder != null) {
-                // Single scenario mode
-                SteplyScenarioRunner runner = new SteplyScenarioRunner(scenario, targetEnv, reports, logLevel);
-                runner.runSuite(folder, targetEnv, reports, logLevel);
+//            targetEnv = "/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply/steply-core/src/main/resources/config/github_host_new.properties";
+//            suiteFolder = "/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply/steply-core/src/main/resources/helloworld";
+
+            if (suiteFolder != null) {
+                // Suite mode
+                SteplyScenarioRunner runner = new SteplyScenarioRunner(null, suiteFolder, targetEnv, reports, logLevel);
+                runner.runSuite();
             }
+
             if (scenario != null) {
                 // Single scenario mode
-                SteplyScenarioRunner runner = new SteplyScenarioRunner(scenario, targetEnv, reports, logLevel);
+                SteplyScenarioRunner runner = new SteplyScenarioRunner(scenario, null, targetEnv, reports, logLevel);
                 runner.runSingleScenario();
-            } else {
-                // Folder mode:  iterate . json files and run each
-                File folderFile = new File(folder);
-                if (!folderFile.isDirectory()) {
-                    System.err.println("Provided folder path is not a directory: " + folder);
-                    System.exit(1);
-                }
-
-                // TODO: Implement using Package runner
-
             }
+
         } catch (ParseException pe) {
-            System.err. println("Error parsing arguments: " + pe.getMessage());
+            System.err.println("Error parsing arguments: " + pe.getMessage());
             new HelpFormatter().printHelp("steply", options);
             System.exit(1);
         } catch (Exception e) {
             System.err.println("Execution failed: " + e.getMessage());
             e.printStackTrace(System.err);
-            System. exit(2);
+            System.exit(2);
         }
     }
 

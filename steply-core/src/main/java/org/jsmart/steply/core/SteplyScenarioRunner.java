@@ -1,6 +1,6 @@
 package org.jsmart.steply.core;
 
-import org.jsmart.steply.template.RunJUnitTestProgrammatically;
+import org.jsmart.steply.template.TestRunner;
 
 import java.io.File;
 
@@ -12,24 +12,40 @@ import java.io.File;
 public class SteplyScenarioRunner {
 
     private final File scenarioFile;
+    private final File suiteFolder;
     private final File targetEnvFile;
     private final File reportDir;
     private final String logLevel;
 
-    public SteplyScenarioRunner(String scenarioPath, String targetEnvPath, String reportDirPath, String logLevel) {
-        this.scenarioFile = new File(scenarioPath);
+    public SteplyScenarioRunner(String scenarioPath, String suiteFolder, String targetEnvPath, String reportDirPath, String logLevel) {
+        if (null != scenarioPath) {
+            this.scenarioFile = new File(scenarioPath);
+        } else {
+            this.scenarioFile = null;
+        }
+        if(null != suiteFolder) {
+            this.suiteFolder = new File(suiteFolder);
+        } else {
+            this.suiteFolder = null;
+        }
         this.targetEnvFile = new File(targetEnvPath);
         this.reportDir = new File(reportDirPath != null ? reportDirPath : "target");
         this.logLevel = logLevel != null ? logLevel : "INFO";
     }
 
     public void validate() {
-        if (!scenarioFile.exists()) {
-            throw new IllegalArgumentException("Scenario file does not exist: " + scenarioFile.getAbsolutePath());
+        if (null != scenarioFile && !scenarioFile.exists()) {
+            throw new IllegalArgumentException("Test Scenario file does not exist: " + scenarioFile.getAbsolutePath());
         }
-        if (!targetEnvFile.exists()) {
+
+        if (null != suiteFolder && !suiteFolder.exists()) {
+            throw new IllegalArgumentException("Test Suite folder does not exist: " + suiteFolder.getAbsolutePath());
+        }
+
+        if (null != targetEnvFile && !targetEnvFile.exists()) {
             throw new IllegalArgumentException("Target env file does not exist: " + targetEnvFile.getAbsolutePath());
         }
+
         if (!reportDir.exists()) {
             reportDir.mkdirs();
         }
@@ -37,11 +53,13 @@ public class SteplyScenarioRunner {
 
     public void runSingleScenario() {
         validate();
-        RunJUnitTestProgrammatically.runSingle(scenarioFile.getAbsolutePath(), targetEnvFile.getAbsolutePath());
+        assert scenarioFile != null;
+        TestRunner.runSingle(scenarioFile.getAbsolutePath(), targetEnvFile.getAbsolutePath());
     }
 
-    public void runSuite(String folder, String targetEnv, String reports, String logLevel) {
+    public void runSuite() {
         validate();
-        RunJUnitTestProgrammatically.runSuite(folder, targetEnv);
+        assert suiteFolder != null;
+        TestRunner.runSuite(suiteFolder.getAbsolutePath(), targetEnvFile.getAbsolutePath());
     }
 }
