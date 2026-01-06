@@ -9,7 +9,7 @@ import java.io.File;
  * and produces a simple pass/fail summary. This is intentionally lightweight:
  * TODO-- integration code to kick off zerocode-tdd programmatically can be added later.
  */
-public class SteplyScenarioRunner {
+public class SteplyCommandRunner {
 
     private final File scenarioFile;
     private final File suiteFolder;
@@ -17,7 +17,7 @@ public class SteplyScenarioRunner {
     private final File reportDir;
     private final String logLevel;
 
-    public SteplyScenarioRunner(String scenarioPath, String suiteFolder, String targetEnvPath, String reportDirPath, String logLevel) {
+    public SteplyCommandRunner(String scenarioPath, String suiteFolder, String targetEnvPath, String reportDirPath, String logLevel) {
         if (null != scenarioPath) {
             this.scenarioFile = new File(scenarioPath);
         } else {

@@ -7,9 +7,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.jsmart.steply.core.SteplyScenarioRunner;
-
-import java.io.File;
+import org.jsmart.steply.core.SteplyCommandRunner;
 
 /**
  * Minimal CLI that parses args and invokes SteplyScenarioRunner.
@@ -20,9 +18,10 @@ public class SteplyCLI {
         Options options = new Options();
 
         options.addOption(Option.builder("s").longOpt("scenario").hasArg().desc("Single scenario file path").build());
-        options.addOption(Option.builder("f").longOpt("folder").hasArg().desc("Folder containing multiple scenarios").build());
-        options.addOption(Option.builder("t").longOpt("target").hasArg().desc("Target environment properties file").build());
-        options.addOption(Option.builder("r").longOpt("reports").hasArg().desc("Custom report output directory (default: ./target)").build());
+        options.addOption(Option.builder("f").longOpt("folder").hasArg().desc("Folder(Test Suite) containing multiple scenarios").build());
+        options.addOption(Option.builder("t").longOpt("target-env").hasArg().desc("Target environment properties file").build());
+        options.addOption(Option.builder("hc").longOpt("host").hasArg().desc("Host(s) configuration properties file path").build());
+        options.addOption(Option.builder("r").longOpt("reports").hasArg().desc("Custom report output directory (default is ./target)").build());
         options.addOption(Option.builder("l").longOpt("log-level").hasArg().desc("Logging level (WARN/INFO/DEBUG)").build());
         options.addOption("v", "version", false, "Show version information");
         options.addOption("h", "help", false, "Show help");
@@ -48,6 +47,7 @@ public class SteplyCLI {
             String scenario = cmd.getOptionValue("s");
             String suiteFolder = cmd.getOptionValue("f");
             String targetEnv = cmd.getOptionValue("t");
+            String hostConfig = cmd.getOptionValue("hc");
 
             String reports = cmd.getOptionValue("r", "target");
             String logLevel = cmd.getOptionValue("l", "INFO");
@@ -58,10 +58,21 @@ public class SteplyCLI {
                 System.exit(1);
             }
 
-            if (targetEnv == null) {
-                System.err.println("Missing required option:  --target (-t)");
+            if (targetEnv == null && hostConfig == null) {
+                System.err.println("Missing required option: either --target-env (-t) OR --host (-hc) must be provided.");
                 new HelpFormatter().printHelp("steply", options);
                 System.exit(1);
+            }
+
+            if (targetEnv != null && hostConfig != null) {
+                System.err.println("Only one of --target-env (-t) OR --host (-hc) should be provided (mutually exclusive).");
+                new HelpFormatter().printHelp("steply", options);
+                System.exit(1);
+            }
+
+            // Because both are same, just handling one option is good enough.
+            if (hostConfig != null) {
+                targetEnv = hostConfig;
             }
 
 //            targetEnv = "/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply/steply-core/src/main/resources/config/github_host_new.properties";
@@ -69,13 +80,13 @@ public class SteplyCLI {
 
             if (suiteFolder != null) {
                 // Suite mode
-                SteplyScenarioRunner runner = new SteplyScenarioRunner(null, suiteFolder, targetEnv, reports, logLevel);
+                SteplyCommandRunner runner = new SteplyCommandRunner(null, suiteFolder, targetEnv, reports, logLevel);
                 runner.runSuite();
             }
 
             if (scenario != null) {
                 // Single scenario mode
-                SteplyScenarioRunner runner = new SteplyScenarioRunner(scenario, null, targetEnv, reports, logLevel);
+                SteplyCommandRunner runner = new SteplyCommandRunner(scenario, null, targetEnv, reports, logLevel);
                 runner.runSingleScenario();
             }
 
