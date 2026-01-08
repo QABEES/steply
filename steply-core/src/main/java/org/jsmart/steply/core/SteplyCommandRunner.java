@@ -5,9 +5,9 @@ import org.jsmart.steply.template.TestRunner;
 import java.io.File;
 
 /**
- * MVP SteplyScenarioRunner. Validates inputs, parses scenario and target env,
- * and produces a simple pass/fail summary. This is intentionally lightweight:
- * TODO-- integration code to kick off zerocode-tdd programmatically can be added later.
+ * MVP SteplyCommandRunner. Validates inputs, parses scenario and target env,
+ * and produces a simple pass/fail summary. This is intentionally lightweight.
+ * TODO: integration code to kick off zerocode-tdd programmatically can be added later.
  */
 public class SteplyCommandRunner {
 
@@ -51,15 +51,30 @@ public class SteplyCommandRunner {
         }
     }
 
+    /**
+     * Configure system properties for ZeroCode test execution.
+     */
+    private void configureSystemProperties() {
+        System.setProperty("zerocode.reports.dir", reportDir.getAbsolutePath());
+        // Note: logLevel parameter is accepted but not yet implemented in MVP
+        // TODO: Configure logging framework (logback/slf4j) based on logLevel parameter
+    }
+
     public void runSingleScenario() {
         validate();
-        assert scenarioFile != null;
+        if (scenarioFile == null) {
+            throw new IllegalStateException("Scenario file must be provided for single scenario execution");
+        }
+        configureSystemProperties();
         TestRunner.runSingle(scenarioFile.getAbsolutePath(), targetEnvFile.getAbsolutePath());
     }
 
     public void runSuite() {
         validate();
-        assert suiteFolder != null;
+        if (suiteFolder == null) {
+            throw new IllegalStateException("Suite folder must be provided for suite execution");
+        }
+        configureSystemProperties();
         TestRunner.runSuite(suiteFolder.getAbsolutePath(), targetEnvFile.getAbsolutePath());
     }
 }

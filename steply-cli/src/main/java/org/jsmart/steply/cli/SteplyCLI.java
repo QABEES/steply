@@ -10,7 +10,7 @@ import org.apache.commons.cli.ParseException;
 import org.jsmart.steply.core.SteplyCommandRunner;
 
 /**
- * Minimal CLI that parses args and invokes SteplyScenarioRunner.
+ * Minimal CLI that parses args and invokes SteplyCommandRunner.
  */
 public class SteplyCLI {
 
@@ -39,10 +39,6 @@ public class SteplyCLI {
                 System.out.println("Steply Test Execution v0.1.0-SNAPSHOT");
                 System.exit(0);
             }
-
-//            String scenario = "/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply/steply-core/src/main/resources/helloworld/hello_world_status_ok_assertions_new.json";
-//            String target = "/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply/steply-core/src/main/resources/config/github_host_new.properties";
-//            String folder = null;
 
             String scenario = cmd.getOptionValue("s");
             String suiteFolder = cmd.getOptionValue("f");
@@ -74,9 +70,6 @@ public class SteplyCLI {
             if (hostConfig != null) {
                 targetEnv = hostConfig;
             }
-
-//            targetEnv = "/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply/steply-core/src/main/resources/config/github_host_new.properties";
-//            suiteFolder = "/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply/steply-core/src/main/resources/helloworld";
 
             if (suiteFolder != null) {
                 // Suite mode
