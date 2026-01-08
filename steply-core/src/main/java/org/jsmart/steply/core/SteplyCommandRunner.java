@@ -53,13 +53,17 @@ public class SteplyCommandRunner {
 
     public void runSingleScenario() {
         validate();
-        assert scenarioFile != null;
+        if (scenarioFile == null) {
+            throw new IllegalStateException("Scenario file must be provided for single scenario execution");
+        }
         TestRunner.runSingle(scenarioFile.getAbsolutePath(), targetEnvFile.getAbsolutePath());
     }
 
     public void runSuite() {
         validate();
-        assert suiteFolder != null;
+        if (suiteFolder == null) {
+            throw new IllegalStateException("Suite folder must be provided for suite execution");
+        }
         TestRunner.runSuite(suiteFolder.getAbsolutePath(), targetEnvFile.getAbsolutePath());
     }
 }
