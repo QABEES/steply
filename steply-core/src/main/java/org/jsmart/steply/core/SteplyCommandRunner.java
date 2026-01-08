@@ -56,6 +56,11 @@ public class SteplyCommandRunner {
         if (scenarioFile == null) {
             throw new IllegalStateException("Scenario file must be provided for single scenario execution");
         }
+        // Set system properties for ZeroCode
+        System.setProperty("zerocode.reports.dir", reportDir.getAbsolutePath());
+        // Note: logLevel parameter is accepted but not yet implemented in MVP
+        // TODO: Configure logging framework (logback/slf4j) based on logLevel parameter
+        
         TestRunner.runSingle(scenarioFile.getAbsolutePath(), targetEnvFile.getAbsolutePath());
     }
 
@@ -64,6 +69,11 @@ public class SteplyCommandRunner {
         if (suiteFolder == null) {
             throw new IllegalStateException("Suite folder must be provided for suite execution");
         }
+        // Set system properties for ZeroCode
+        System.setProperty("zerocode.reports.dir", reportDir.getAbsolutePath());
+        // Note: logLevel parameter is accepted but not yet implemented in MVP
+        // TODO: Configure logging framework (logback/slf4j) based on logLevel parameter
+        
         TestRunner.runSuite(suiteFolder.getAbsolutePath(), targetEnvFile.getAbsolutePath());
     }
 }
