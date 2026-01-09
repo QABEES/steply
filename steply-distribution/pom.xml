@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+           https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>org.jsmart</groupId>
+    <artifactId>steply-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>steply-distribution</artifactId>
+  <packaging>pom</packaging>
+  <name>steply-distribution</name>
+
+  <build>
+    <plugins>
+      <!-- Assembly plugin to gather artifacts into a distribution layout -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <descriptors>
+            <descriptor>assembly/steply-assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-distribution</id>
+            <phase>package</phase>
+            <goals><goal>single</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Create SHA256 checksums for assembled zips using AntRun (avoid calling Maven APIs from JS) -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals><goal>run</goal></goals>
+            <configuration>
+              <target>
+                <!-- expose the assembly directory as an Ant property -->
+                <property name="assembly.dir" value="${project.build.directory}/assembly"/>
+                <echo message="Generating sha256 checksums (if any zips exist) in ${assembly.dir}"/>
+                <script language="javascript"><![CDATA[
+                  var File = java.io.File;
+                  var dirPath = project.getProperty("assembly.dir");
+                  var dir = new File(dirPath);
+                  if (dir.exists()) {
+                    var files = dir.listFiles();
+                    for (var i=0;i<files.length;i++) {
+                      var f = files[i];
+                      if (f.getName().endsWith(".zip")) {
+                        // Build a shell command to create a sha256 file next to the zip
+                        var cmdArray = ["sh","-c","shasum -a 256 " + f.getAbsolutePath() + " > " + f.getAbsolutePath() + ".sha256"];
+                        var proc = java.lang.Runtime.getRuntime().exec(cmdArray);
+                        var exitCode = proc.waitFor();
+                        if (exitCode != 0) {
+                          // Print a warning but continue
+                          java.lang.System.err.println("Warning: shasum exited with code " + exitCode + " for " + f.getAbsolutePath());
+                        }
+                      }
+                    }
+                  } else {
+                    // nothing to do
+                    java.lang.System.out.println("No assembly directory found at: " + dirPath);
+                  }
+                ]]></script>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <!-- Make sure assembly descriptor can include module artifacts -->
+  </dependencies>
+</project>
+
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<project xmlns="http://maven.apache.org/POM/4.0.0"-->
+<!--         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+<!--         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0-->
+<!--           https://maven.apache.org/xsd/maven-4.0.0.xsd">-->
+<!--  <parent>-->
+<!--    <groupId>org.jsmart</groupId>-->
+<!--    <artifactId>steply-parent</artifactId>-->
+<!--    <version>0.1.0-SNAPSHOT</version>-->
+<!--  </parent>-->
+<!--  <modelVersion>4.0.0</modelVersion>-->
+
+<!--  <artifactId>steply-distribution</artifactId>-->
+<!--  <packaging>pom</packaging>-->
+<!--  <name>steply-distribution</name>-->
+
+<!--  <build>-->
+<!--    <plugins>-->
+<!--      &lt;!&ndash; Assembly plugin to gather artifacts into a distribution layout &ndash;&gt;-->
+<!--      <plugin>-->
+<!--        <artifactId>maven-assembly-plugin</artifactId>-->
+<!--        <version>3.3.0</version>-->
+<!--        <configuration>-->
+<!--          <descriptors>-->
+<!--            <descriptor>assembly/steply-assembly.xml</descriptor>-->
+<!--          </descriptors>-->
+<!--        </configuration>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <id>make-distribution</id>-->
+<!--            <phase>package</phase>-->
+<!--            <goals><goal>single</goal></goals>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
+
+<!--      &lt;!&ndash; Create SHA256 checksums for assembled zips &ndash;&gt;-->
+<!--      <plugin>-->
+<!--        <groupId>org.apache.maven.plugins</groupId>-->
+<!--        <artifactId>maven-antrun-plugin</artifactId>-->
+<!--        &lt;!&ndash;<version>1.8</version>&ndash;&gt;-->
+<!--        <version>3.2.0</version>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <phase>package</phase>-->
+<!--            <goals><goal>run</goal></goals>-->
+<!--            <configuration>-->
+<!--              <target>-->
+<!--                <available file="${project.build.directory}/assembly" property="assembly.dir.exists"/>-->
+<!--                <echo message="Generating sha256 checksums (if any zips exist)"/>-->
+<!--                <script language="javascript"><![CDATA[-->
+<!--                  var File = java.io.File;-->
+<!--                  var dir = new File(project.getBuild().getDirectory() + "/assembly");-->
+<!--                  if (dir.exists()) {-->
+<!--                    var files = dir.listFiles();-->
+<!--                    for (var i=0;i<files.length;i++) {-->
+<!--                      var f = files[i];-->
+<!--                      if (f.getName().endsWith(".zip")) {-->
+<!--                        var proc = java.lang.Runtime.getRuntime().exec(["sh","-c","shasum -a 256 " + f.getAbsolutePath() + " > " + f.getAbsolutePath() + ".sha256"]);-->
+<!--                        proc.waitFor();-->
+<!--                      }-->
+<!--                    }-->
+<!--                  }-->
+<!--                ]]></script>-->
+<!--              </target>-->
+<!--            </configuration>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
+<!--    </plugins>-->
+<!--  </build>-->
+
+<!--  <dependencies>-->
+<!--    &lt;!&ndash; Make sure assembly descriptor can include module artifacts &ndash;&gt;-->
+<!--  </dependencies>-->
+<!--</project>-->

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="fileAppender" class="ch.qos.logback.core.FileAppender">
+        <file>target/logs/executions.log</file>
+        <append>true</append>
+        <encoder>
+            <!-- make it 100 to print full package -->
+            <pattern>%d [%thread] %-5level %logger{32} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d [%thread] %-5level %logger{32} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <!-- make it INFO or DEBUG for getting more verbose logs, otherwise WARN is fine for regular builds -->
+    <root level="WARN">
+        <appender-ref ref="fileAppender" />
+        <appender-ref ref="consoleAppender" />
+    </root>
+</configuration>

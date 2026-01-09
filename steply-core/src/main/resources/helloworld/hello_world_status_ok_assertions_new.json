@@ -1,0 +1,19 @@
+{
+    "scenarioName": "NEW - TEST GITHUB USER DETAILS SCENARIO with mojombo @Syed #SIT",
+    "steps": [
+        {
+            "name": "get_user_details_new",
+            "url": "/users/mojombo",
+            "method": "GET",
+            "request": {
+            },
+            "verify": {
+                "status": 200,
+                "body": {
+                    "login" : "mojombo",
+                    "type" : "User"
+                }
+            }
+        }
+    ]
+}
