@@ -73,15 +73,17 @@ public class TestRunner {
         }
     }
 
+/*
     public static void main(String[] args) {
-//        String scenarioPath = "helloworld/hello_world_status_ok_assertions_new.json";
-//        String targetEnvPath = "config/github_host_new.properties";
-//        runSingle(scenarioPath, targetEnvPath);
+        String scenarioPath = "helloworld/hello_world_status_ok_assertions_new.json";
+        String targetEnvPath = "config/github_host_new.properties";
+        runSingle(scenarioPath, targetEnvPath);
 
         String folder = "helloworldnew" ;
         String targetEnvPath = "config/github_host_new.properties";
         runSuite(folder, targetEnvPath);
 
     }
+*/
 }
 

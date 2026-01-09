@@ -5,9 +5,8 @@ import org.jsmart.steply.template.TestRunner;
 import java.io.File;
 
 /**
- * MVP SteplyScenarioRunner. Validates inputs, parses scenario and target env,
+ * MVP SteplyCommandRunner. Validates inputs, parses scenario and target env,
  * and produces a simple pass/fail summary. This is intentionally lightweight:
- * TODO-- integration code to kick off zerocode-tdd programmatically can be added later.
  */
 public class SteplyCommandRunner {
 
@@ -17,14 +16,14 @@ public class SteplyCommandRunner {
     private final File reportDir;
     private final String logLevel;
 
-    public SteplyCommandRunner(String scenarioPath, String suiteFolder, String targetEnvPath, String reportDirPath, String logLevel) {
-        if (null != scenarioPath) {
-            this.scenarioFile = new File(scenarioPath);
+    public SteplyCommandRunner(String scenarioFilePath, String suiteFolderPath, String targetEnvPath, String reportDirPath, String logLevel) {
+        if (null != scenarioFilePath) {
+            this.scenarioFile = new File(scenarioFilePath);
         } else {
             this.scenarioFile = null;
         }
-        if(null != suiteFolder) {
-            this.suiteFolder = new File(suiteFolder);
+        if(null != suiteFolderPath) {
+            this.suiteFolder = new File(suiteFolderPath);
         } else {
             this.suiteFolder = null;
         }
@@ -53,13 +52,17 @@ public class SteplyCommandRunner {
 
     public void runSingleScenario() {
         validate();
-        assert scenarioFile != null;
+        if (scenarioFile == null) {
+            throw new IllegalStateException("Scenario file must be provided for single scenario execution");
+        }
         TestRunner.runSingle(scenarioFile.getAbsolutePath(), targetEnvFile.getAbsolutePath());
     }
 
     public void runSuite() {
         validate();
-        assert suiteFolder != null;
+        if (suiteFolder == null) {
+            throw new IllegalStateException("Suite folder must be provided for suite execution");
+        }
         TestRunner.runSuite(suiteFolder.getAbsolutePath(), targetEnvFile.getAbsolutePath());
     }
 }

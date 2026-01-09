@@ -9,9 +9,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.jsmart.steply.core.SteplyCommandRunner;
 
-/**
- * Minimal CLI that parses args and invokes SteplyScenarioRunner.
- */
 public class SteplyCLI {
 
     public static void main(String[] args) {
