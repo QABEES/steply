@@ -33,7 +33,7 @@ public class SteplyCLI {
             }
 
             if (cmd.hasOption("v")) {
-                System.out.println("Steply Test Execution v0.1.0-SNAPSHOT");
+                System.out.println("Steply Test Execution Version v0.1.0-SNAPSHOT");
                 System.exit(0);
             }
 
