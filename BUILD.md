@@ -116,6 +116,30 @@ java -jar steply-cli/target/steply-cli-0.1.0-SNAPSHOT-jar-with-dependencies.jar 
 ./scripts/build-distribution-local-jre.sh /Users/<MYHOMEDIR>/.sdkman/candidates/java/current/zulu-8.jdk/Contents/Home/jre zip_folder
 
 
+# Installing Steply (one-line installer)
+
+```shell
+curl -fsSL https://raw.githubusercontent.com/QABEES/steply/main/scripts/install.sh | bash
+```
+
+This installs the launcher to `~/.local/bin/steply`.
+
+**After installation — refresh your shell command cache** so the new binary is
+found without opening a new terminal:
+```shell
+hash -r 2>/dev/null || true
+steply -v
+```
+
+**Removing a legacy `/usr/local/bin/steply` wrapper** (if you previously
+installed via the manual `sudo tee` method below):
+```shell
+sudo rm -f /usr/local/bin/steply
+hash -r 2>/dev/null || true
+```
+
+---
+
 # STEPLY CLI
 export PATH="/Users/nchandra/Downloads/STEPLY_WORKSPACE/steply-dist/bin:$PATH
 (Not necessary if you're creating a Symlink to bin/steply.sh in your /usr/local/bin or similar)
