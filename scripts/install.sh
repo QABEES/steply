@@ -45,7 +45,7 @@ chmod +x "${LAUNCHER}"
 echo
 echo "Installed Steply ${VERSION}."
 echo "Install dir: ${DIST_DIR}"
-echo "Binary: ${LAUNCHER}"
+echo "Launcher:    ${LAUNCHER}"
 echo
 
 if ! echo ":$PATH:" | grep -q ":${BIN_DIR}:"; then
@@ -55,5 +55,28 @@ if ! echo ":$PATH:" | grep -q ":${BIN_DIR}:"; then
   echo
 fi
 
+# Refresh the shell's command-lookup cache so command -v picks up the new launcher.
+hash -r 2>/dev/null || true
+
+RESOLVED_CMD="$(command -v steply 2>/dev/null || true)"
+if [[ -z "${RESOLVED_CMD}" ]]; then
+  echo "Resolved path: (not found - '${BIN_DIR}' may not be on PATH yet)"
+  echo "Open a new terminal or run:  export PATH=\"${BIN_DIR}:\$PATH\""
+elif [[ "${RESOLVED_CMD}" != "${LAUNCHER}" ]]; then
+  echo "Resolved path: ${RESOLVED_CMD}"
+  echo
+  echo "WARNING: 'steply' resolves to a different location than the new launcher."
+  echo "         Expected: ${LAUNCHER}"
+  echo "         Got:      ${RESOLVED_CMD}"
+  echo
+  echo "A legacy wrapper is shadowing the new install.  To remove it, run:"
+  echo "  sudo rm -f \"${RESOLVED_CMD}\""
+  echo "Then refresh your shell cache:"
+  echo "  hash -r 2>/dev/null || true"
+else
+  echo "Resolved path: ${RESOLVED_CMD}  (OK)"
+fi
+
+echo
 echo "Try:"
 echo "  steply -v"
