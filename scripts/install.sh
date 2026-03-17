@@ -87,3 +87,7 @@ else
   echo "ERROR: Steply installation verification failed. Please check the install."
   exit 1
 fi
+echo ""
+echo "👉 Run the following command to test Steply:"
+echo "steply --scenario tests/get_user_api.json --target-env env/sit1.properties"
+echo ""
