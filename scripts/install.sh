@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VERSION="20260320.01" #This is the only variable to update when releasing a new version.
+VERSION="20260320.02" #This is the only variable to update when releasing a new version.
 ZIP_NAME="steply-${VERSION}.zip"
 
 ZIP_URL="https://github.com/QABEES/steply/releases/download/${VERSION}/${ZIP_NAME}"
