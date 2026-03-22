@@ -144,5 +144,11 @@ jobs:
       - name: Run install_no_jre.sh via curl (mirrors real user experience)
         run: curl -fsSL https://raw.githubusercontent.com/QABEES/steply/main/scripts/install_no_jre.sh | bash
 
-      - name: Verify steply is executable and responds to -v
+      - name: Verify steply -v works - mimics Ubuntu in Docker(without symlink)
         run: ~/.local/bin/steply -v
+
+      - name: Add steply to PATH for subsequent steps(tries to setup like aws VPS)
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Verify steply -v works - mimics real aws VPS(with symlink)
+        run: steply -v

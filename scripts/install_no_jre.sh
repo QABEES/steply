@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Installs Steply without a bundled JRE.
-# Requires Java 17+ to be available on the PATH.
+# Requires Java 17 or higher to be available on the PATH.
 # Intended for CI environments (e.g. GitHub Actions or GitLab Pipeline).
 #
 # Usage:
@@ -28,6 +28,15 @@ _has_command()         { command -v "$1" &>/dev/null; }
 _get_uname()           { uname; }
 _java_version_output() { java -version 2>&1; }
 _read_os_release()     { cat "${OS_RELEASE_FILE}"; }
+
+# Use sudo only when not already root (e.g. Docker containers run as root without sudo)
+_sudo() {
+  if [[ "$(id -u)" -eq 0 ]]; then
+    "$@"        # already root (e.g. Docker) — run directly
+  else
+    sudo "$@"   # not root — elevate with sudo
+  fi
+}
 
 # ---------------------------------------------------------------------------
 # OS Detection
@@ -87,16 +96,16 @@ get_java_major_version() {
   echo "${output}" | grep -oE '"[0-9]+' | head -1 | tr -d '"' || echo "0"
 }
 
-install_java_debian()     { sudo apt-get install -y openjdk-17-jre-headless; }
-install_java_fedora()     { sudo dnf install -y java-17-openjdk-headless; }
-install_java_fedora_yum() { sudo yum install -y java-17-openjdk-headless; }
+install_java_debian()     { _sudo apt-get install -y openjdk-17-jre-headless; }
+install_java_fedora()     { _sudo dnf install -y java-17-openjdk-headless; }
+install_java_fedora_yum() { _sudo yum install -y java-17-openjdk-headless; }
 install_java_amazon() {
-  sudo amazon-linux-extras enable corretto17 2>/dev/null || true
-  sudo yum install -y java-17-amazon-corretto-headless
+  _sudo amazon-linux-extras enable corretto17 2>/dev/null || true
+  _sudo yum install -y java-17-amazon-corretto-headless
 }
 install_java_brew() { brew install openjdk@17; }
 install_java_macos_no_brew() {
-  echo "ERROR: Java 17 not found and Homebrew is not installed."
+  echo "ERROR: Java 17 or higher not found and Homebrew is not installed."
   echo "Please install Java 17 (or higher) manually and re-run this script."
   echo ""
   echo "Option 1) Recommended: Install Homebrew first (https://brew.sh), then re-run this script."
@@ -116,7 +125,7 @@ install_java_for_os() {
     macos-brew)    install_java_brew ;;
     macos-no-brew) install_java_macos_no_brew ;;
     *)
-      echo "ERROR: Could not install Java 17 automatically. Please install Java 17+ manually and re-run."
+      echo "ERROR: Could not install Java 17 automatically. Please install Java 17 or higher manually and re-run."
       exit 1
       ;;
   esac
@@ -130,7 +139,7 @@ ensure_java() {
     return 0
   fi
 
-  echo "Java 17+ not found — attempting to install Java 17..."
+  echo "Java 17 or higher not found — attempting to install Java 17..."
   install_java_for_os "$(detect_os)"
 }
 
@@ -138,9 +147,9 @@ ensure_java() {
 # unzip
 # ---------------------------------------------------------------------------
 
-install_unzip_debian() { sudo apt-get install -y unzip; }
-install_unzip_fedora() { sudo dnf install -y unzip; }
-install_unzip_yum()    { sudo yum install -y unzip; }
+install_unzip_debian() { _sudo apt-get install -y unzip; }
+install_unzip_fedora() { _sudo dnf install -y unzip; }
+install_unzip_yum()    { _sudo yum install -y unzip; }
 install_unzip_brew()   { brew install unzip; }
 
 install_unzip_for_os() {
@@ -238,11 +247,12 @@ install_steply() {
 # ---------------------------------------------------------------------------
 
 path_contains_bin_dir() {
-  echo ":${PATH}:" | grep -q ":${BIN_DIR}:"
+  # Used fixed-string matching with "grep -qF"
+  echo ":${PATH}:" | grep -qF ":${BIN_DIR}:"
 }
 
 shell_profiles() {
-  printf '%s\n' "${HOME}/.bashrc" "${HOME}/.zshrc"
+  printf '%s\n' "${HOME}/.profile" "${HOME}/.bashrc" "${HOME}/.zshrc"
 }
 
 append_path_to_profile() {
@@ -259,7 +269,9 @@ append_path_to_profile() {
 
 print_path_note() {
   echo
-  echo "NOTE: To use 'steply' in this session, run:"
+  echo "NOTE: '${BIN_DIR}' has been added to your shell profile PATH settings."
+  echo "New terminals will pick this up automatically."
+  echo "To use it in this terminal right now, run:"
   echo "  $1"
   echo
 }
@@ -275,6 +287,10 @@ setup_path() {
   while IFS= read -r profile; do
     append_path_to_profile "${profile}" "${export_line}"
   done < <(shell_profiles)
+
+  # Export for the current session (no-op when run via curl|bash subshell,
+  # but takes effect when the script is sourced or run directly).
+  export PATH="${BIN_DIR}:${PATH}"
 
   print_path_note "${export_line}"
 }

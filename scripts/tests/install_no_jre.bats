@@ -406,12 +406,13 @@ create_os_release_file() {
   PATH="$saved_path"
 }
 
-@test "shell_profiles: returns bashrc and zshrc under HOME" {
+@test "shell_profiles: returns profile, bashrc and zshrc under HOME" {
   HOME="${FAKE_HOME}"
 
   run shell_profiles
   [ "$status" -eq 0 ]
-  [ "$output" = "${FAKE_HOME}/.bashrc
+  [ "$output" = "${FAKE_HOME}/.profile
+${FAKE_HOME}/.bashrc
 ${FAKE_HOME}/.zshrc" ]
 }
 
