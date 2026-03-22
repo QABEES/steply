@@ -301,7 +301,7 @@ prepare_install_dirs() {
 }
 
 setup_tmp_dir() {
-  TMP_DIR="$(mktemp -d)"
+  TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/steply.XXXXXX")"
   cleanup() { rm -rf "${TMP_DIR}"; }
   trap cleanup EXIT
 }

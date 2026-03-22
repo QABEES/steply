@@ -6,8 +6,6 @@ TEST_FILE="${REPO_ROOT}/scripts/tests/install_no_jre.bats"
 
 if command -v bats >/dev/null 2>&1; then
   BATS_CMD="bats"
-elif command -v bats-core >/dev/null 2>&1; then
-  BATS_CMD="bats-core"
 else
   echo "ERROR: bats-core is required to run shell unit tests."
   echo
