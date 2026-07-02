@@ -50,19 +50,19 @@ public class SteplyCommandRunner {
         }
     }
 
-    public void runSingleScenario() {
+    public boolean runSingleScenario() {
         validate();
         if (scenarioFile == null) {
             throw new IllegalStateException("Scenario file must be provided for single scenario execution");
         }
-        JUCoreTestRunner.runSingle(scenarioFile.getAbsolutePath(), targetEnvFile.getAbsolutePath());
+        return JUCoreTestRunner.runSingle(scenarioFile.getAbsolutePath(), targetEnvFile.getAbsolutePath());
     }
 
-    public void runSuite() {
+    public boolean runSuite() {
         validate();
         if (suiteFolder == null) {
             throw new IllegalStateException("Suite folder must be provided for suite execution");
         }
-        JUCoreTestRunner.runSuite(suiteFolder.getAbsolutePath(), targetEnvFile.getAbsolutePath());
+        return JUCoreTestRunner.runSuite(suiteFolder.getAbsolutePath(), targetEnvFile.getAbsolutePath());
     }
 }

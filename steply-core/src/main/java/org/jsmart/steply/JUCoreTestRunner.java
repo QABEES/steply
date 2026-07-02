@@ -6,7 +6,7 @@ import org.junit.runner.notification.Failure;
 
 public class JUCoreTestRunner {
 
-    public static void runSingle(String scenarioPath, String targetEnvPath) {
+    public static boolean runSingle(String scenarioPath, String targetEnvPath) {
         // ---- Override ZeroCode annotations programmatically via System properties ----
         System.setProperty("zerocode.env", targetEnvPath);
         System.setProperty("zerocode.scenario", scenarioPath);
@@ -20,17 +20,17 @@ public class JUCoreTestRunner {
         // Print final stats
         printFinalStats(result);
 
-        // ---- IMPORTANT: exit code for CI ----
+        // ---- IMPORTANT: return success flag for CLI ----
         if (!result.wasSuccessful()) {
             System.err.println("❌ Tests failed");
-            System.exit(1);   // NON-ZERO → CI FAIL
+            return false;
         }
 
         System.out.println("✅ Tests passed");
-        System.exit(0);       // ZERO → CI PASS
+        return true;
     }
 
-    public static void runSuite(String folder, String targetEnvPath) {
+    public static boolean runSuite(String folder, String targetEnvPath) {
         // Override ZeroCode annotations programmatically via System properties
         System.setProperty("zerocode.env", targetEnvPath);
         System.setProperty("zerocode.folder", folder);
@@ -44,14 +44,14 @@ public class JUCoreTestRunner {
         // Print final stats
         printFinalStats(result);
 
-        // ---- IMPORTANT: exit code for CI ----
+        // ---- IMPORTANT: return success flag for CLI ----
         if (!result.wasSuccessful()) {
             System.err.println("❌ Tests failed");
-            System.exit(1);   // NON-ZERO → CI FAIL
+            return false;
         }
 
         System.out.println("✅ Tests passed");
-        System.exit(0);       // ZERO → CI PASS
+        return true;
     }
 
     private static void printFinalStats(Result result) {

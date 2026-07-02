@@ -11,10 +11,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Unit tests for SteplyCLI argument parsing and invocation paths.
+ * Unit tests for SteplyCLI argument parsing using Picocli.
  * <p>
- * Since SteplyCLI now exposes run(String[] args) returning an exit code,
- * tests can call it directly without intercepting System.exit().
+ * Tests invoke SteplyCLI.run(String[] args) returning an exit code,
+ * so tests can call it directly without intercepting System.exit().
  */
 public class SteplyCLITest {
 
@@ -29,8 +29,6 @@ public class SteplyCLITest {
         outContent = new ByteArrayOutputStream();
         errContent = new ByteArrayOutputStream();
 
-        // due to this, no more it prints to console during tests,
-        // but we can capture and assert on the output content
         System.setOut(new PrintStream(outContent));
         System.setErr(new PrintStream(errContent));
     }
@@ -50,13 +48,13 @@ public class SteplyCLITest {
 
         String out = outContent.toString();
         assertTrue("Help output should contain usage information",
-                out.toLowerCase().contains("usage"));
+                out.toLowerCase().contains("usage: steply"));
     }
 
     @Test
     public void versionOption_shouldPrintVersionAndExit0() {
 
-        int status = SteplyCLI.run(new String[]{"-v"});
+        int status = SteplyCLI.run(new String[]{"-V"}); // Picocli mixin StandardHelpOptions uses -V for version
 
         assertEquals(0, status);
 
@@ -66,77 +64,58 @@ public class SteplyCLITest {
     }
 
     @Test
-    public void missingTargetAndHost_shouldPrintWarning_butProceedExecution() {
-
-        int status = SteplyCLI.run(new String[]{"-s", "some-scenario.json"});
-
-        // exit code 2 confirms execution proceeded past the env-check (not failed-fast with 1)
-        assertEquals(2, status);
-
-        String err = errContent.toString();
-        assertTrue(err.contains("Running in default mode."));
-    }
-
-    @Test
-    public void bothTargetAndHostProvided_shouldPrintErrorAndExit1() {
-
-        int status = SteplyCLI.run(new String[]{
-                "-s", "sc.json",
-                "-t", "t.properties",
-                "-hc", "host.properties"
-        });
-
-        assertEquals(1, status);
-
-        String err = errContent.toString();
-        assertTrue(err.contains("Only one of --target-env (-t) OR --host (-hc) should be provided"));
-    }
-
-    @Test
-    public void noArgs_shouldPrintError_andExit1() {
+    public void noArgs_shouldPrintUsage_andExit1() {
 
         int status = SteplyCLI.run(new String[]{});
 
+        // Since we explicitly override call() in SteplyCLI to print usage and return 1
         assertEquals(1, status);
 
-        String err = errContent.toString();
-        assertTrue(err.contains("Either --scenario (-s) OR --folder (-f) or --suite must be provided (mutually exclusive)."));
+        String out = outContent.toString();
+        assertTrue("Output should contain usage", out.toLowerCase().contains("usage: steply"));
     }
 
     @Test
-    public void bothScenarioAndFolder_shouldPrintError_andExit1() {
+    public void runCommand_noArgs_shouldPrintError_andExit2() {
 
-        int status = SteplyCLI.run(new String[]{
-                "-s", "sc.json",
-                "-f", "suite-folder"
-        });
+        int status = SteplyCLI.run(new String[]{"run"});
 
-        assertEquals(1, status);
+        assertEquals(2, status);
 
         String err = errContent.toString();
-        assertTrue(err.contains("Either --scenario (-s) OR --folder (-f) or --suite must be provided (mutually exclusive)."));
+        assertTrue(err.contains("Either a scenario file OR --folder/--suite must be provided."));
+        assertTrue(err.toLowerCase().contains("usage: steply run"));
     }
 
     @Test
-    public void invalidFlag_shouldPrintError_andExit1() {
+    public void runCommand_missingFile_shouldPrintError_andExit2() {
 
-        int status = SteplyCLI.run(new String[]{"--unknown-flag"});
+        int status = SteplyCLI.run(new String[]{"run", "does-not-exist.json"});
 
-        assertEquals(1, status);
+        assertEquals(2, status);
 
         String err = errContent.toString();
-        assertTrue(err.contains("Error parsing arguments:"));
+        assertTrue(err.contains("Error: Scenario file does not exist:"));
     }
 
     @Test
-    public void hostConfigAlias_shouldNormalizeToTargetEnv_andProceedExecution() {
+    public void runCommand_missingTarget_shouldPrintWarning_butProceedExecution() {
 
-        int status = SteplyCLI.run(new String[]{
-                "-s", "some-scenario.json",
-                "-hc", "host.properties"
-        });
+        int status = SteplyCLI.run(new String[]{"run", "pom.xml"});
 
-        // exit code 2 confirms -hc was accepted, normalized to targetEnv, and execution was attempted
+        // exit code 1 confirms execution proceeded past parsing and ran tests which naturally failed on pom.xml
+        assertEquals(1, status);
+
+        String err = errContent.toString();
+        assertTrue(err.contains("Running in default mode."));
+        assertTrue(err.contains("Tests failed"));
+    }
+
+    @Test
+    public void runCommand_withTargetEnv_shouldProceedExecution() {
+
+        int status = SteplyCLI.run(new String[]{"run", "pom.xml", "-t", "env.properties"});
+
         assertEquals(2, status);
 
         String err = errContent.toString();
@@ -144,39 +123,24 @@ public class SteplyCLITest {
     }
 
     @Test
-    public void longOptions_help_shouldWorkSameAsShortOption() {
+    public void invalidCommand_shouldPrintError_andExit2() {
 
-        int status = SteplyCLI.run(new String[]{"--help"});
+        int status = SteplyCLI.run(new String[]{"unknownCommand"});
 
-        assertEquals(0, status);
-
-        String out = outContent.toString();
-        assertTrue(out.toLowerCase().contains("usage"));
-    }
-
-    @Test
-    public void longOptions_version_shouldWorkSameAsShortOption() {
-
-        int status = SteplyCLI.run(new String[]{"--version"});
-
-        assertEquals(0, status);
-
-        String out = outContent.toString();
-        assertTrue(out.contains("Steply Test Execution Version"));
-    }
-
-    @Test
-    public void suiteOption_shouldBehaveSameAsFolder_andProceedExecution() {
-
-        int status = SteplyCLI.run(new String[]{
-                "--suite", "some-suite-folder",
-                "-t", "env.properties"
-        });
-
-        // exit code 2 confirms --suite was accepted and execution was attempted (not failed-fast with 1)
         assertEquals(2, status);
 
         String err = errContent.toString();
-        assertTrue(err.contains("Execution failed:"));
+        assertTrue(err.contains("Unmatched argument at index 0: 'unknownCommand'"));
+    }
+
+    @Test
+    public void logsCommand_help_shouldPrintUsageAndExit0() {
+
+        int status = SteplyCLI.run(new String[]{"logs", "--help"});
+
+        assertEquals(0, status);
+
+        String out = outContent.toString();
+        assertTrue(out.toLowerCase().contains("usage: steply logs"));
     }
 }
